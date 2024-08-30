@@ -1,29 +1,36 @@
-# The code for the paper "Dynamic Gaussian Mixture based Deep Generative Model ForRobust Forecasting on Sparse Multivariate Time Series" accepted by AAAI 2021
+# Dynamic Gaussian Mixture based Deep Generative Model ForRobust Forecasting on Sparse Multivariate Time Series with MIMIC3
 
+- DGM2_L uses LSTM for transition 
+- DGM2_O uses ODE for transition
 
 ## Prerequisites:
-install conda, pytorch, matplotlib, pandas, scikit-learn tensorboardX, torchdiffeq (see the instructions in https://github.com/rtqichen/torchdiffeq)
+- python version 3.11.9
+- pytorch 
+- matplotlib
+- pandas
+- scikit-learn 
+- tensorboardX
+- torchdiffeq
 
-## Datasets:
-The datasets we used are included in the folder 'dataset_dir'
+## Run
 
-## Instructions on how to run the demo code on USHCN dataset
-1. Normalize and partition the dataset for forecasting with the following commands in the terminal:
-
-Generate processed dataset for forecasting:
+Go to folder `data` then unzip mimic3.zip and run:
 
 ```
-cd data/
-python3 generate_time_series.py --dataset USHCN
+python generate_time_series.py --dataset MIMIC3
 ```
 
-2. Run the program train.py in the main directory:
+Then go back to the main folder and run:
+
+```
+python train.py --dataset MIMIC3 --model DGM2_L -b 100 --epochs 50 --GPU --GPUID 0 --max_kl 5 --use_gate --wait_epoch 0
+```
 
 ### The arguments for running this program are:
 
---dataset: the name of the dataset (KDDCUP or USHCN or MIMIC3)
+--dataset: the name of the dataset (MIMIC3)
 
---model: the model name (DGM2_L or DGM2_O, DGM2_L uses LSTM for transition while DGM2_O uses ODE for transition)
+--model: the model name (DGM2_L or DGM2_O)
 
 -b: mini-batch size
 
@@ -42,67 +49,3 @@ python3 generate_time_series.py --dataset USHCN
 --wait_epoch: number of epochs for the warm-up phase with annealing technique during which the coefficient for the KL divergence term in the loss function is zero. The default value is 0
 
 --cluster_num: number of clusters for DGM2_L and DGM2_O. The default value is 20.
-
-### with GPU (suppose the GPU ID is 0):
-
-use DGM2_L:
-```
-python3 train.py --dataset USHCN --model DGM2_L -b 100 --epochs 50 --GPU --GPUID 0 --max_kl 5 --use_gate --wait_epoch 0
-```
-
-or
-
-use DGM2_O:
-```
-python3 train.py --dataset USHCN --model DGM2_O -b 100 --epochs 50 --GPU --GPUID 0 --max_kl 5 --use_gate --wait_epoch 0
-```
-
-
-### without GPU:
-
-use DGM2_L:
-
-```
-python3 train.py --dataset USHCN --model DGM2_L -b 100 --epochs 50 --max_kl 5 --use_gate --wait_epoch 0
-```
-
-or
-
-use DHM2_O:
-
-```
-python3 train.py --dataset USHCN --model DGM2_O -b 100 --epochs 50 --max_kl 5 --use_gate --wait_epoch 0
-```
-
-
-## Similarly, the demo code can run on other datasets
-
-
-Generate processed KDDCUP dataset for forecasting:
-
-```
-cd data/
-python3 generate_time_series.py --dataset KDDCUP
-```
-
-Run demo code:
-
-```
-python3 train.py --dataset KDDCUP --model DGM2_O -b 200 --epochs 200 --GPU --GPUID 0 --max_kl 3 --use_gate
-```
-
-Generate processed MIMIC3 dataset for forecasting:
-(Since the size of the MIMIC3 dataset is larger than the uploading limitation, we compressed this dataset)
-
-```
-cd dataset_dir/
-unzip mimic3.zip
-cd data/
-python3 generate_time_series.py --dataset MIMIC3
-```
-
-Run demo code:
-
-```
-python3 train.py --dataset MIMIC3 --model DGM2_O -b 3000 --epochs 200 --GPU --GPUID 0 --max_kl 6 --use_gate --wait_epoch 60
-```
